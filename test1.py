@@ -11,10 +11,14 @@ def run_time(func):
         end = time()
         cost_time = end - start
         print("func three run time {}".format(cost_time))
+        return func() #一般，在return中运行func()
     return wrapper
 
 @run_time
 def fun_one():
     sleep(2)
 
+start = time()
 fun_one()
+end = time()
+logging.info(end-start)
