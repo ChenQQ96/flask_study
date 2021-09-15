@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="utf-8">
+<head>
+    <meta charset="UTF-8">
+    <title>王亚锋</title>
+</head>
+<body>
+    这是一个简单的页面,flask勾搭html
+    <p style="color:#FF00FF">用户名：{{ username }}</p>
+    <p>年龄：{{ age }}</p>
+    <p style="color:#7B68EE">性别：{{ gender }}</p>
+    <p>等级：{{ flag }}</p>
+    <p style="color:#FF00FF">英雄：{{ hero }}</p>
+<hr>
+    <!--引用类中的参数-->
+    <p style="color:#7B68EE"> 申请邮箱：{{person.Email}}</p>
+    <p style="color:#FF00FF">申请时间：{{person.time }}</p>
+<hr>
+    <!--引用wwwurl字典中的参数,有两种形式-->
+    <p style="color:#7B68EE">百度：{{wwwurl.baidu}}</p>
+    <p style="color:#FF00FF">谷歌：{{wwwurl['google'] }}</p>
+</body>
+</html>
