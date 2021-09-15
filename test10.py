@@ -17,6 +17,7 @@ def func():
 def func2():
     return 'bad'
 
+#见括号内的，就是动态部分
 @app.route('/user/<name>')
 def user(name):
     return 'Hello, {}!'.format(name)
