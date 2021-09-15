@@ -17,6 +17,10 @@ def func():
 def func2():
     return 'bad'
 
+@app.route('/user/<name>')
+def user(name):
+    return 'Hello, {}!'.format(name)
+
 if __name__=='__main__':
     #启动Web服务器
     #Web服务器会默认监听本地的5000端口，但不支持远程访问。如果你想支持远程，需要在run()方法传入host=0.0.0.0，想改变监听端口的话，传入port=端口号
