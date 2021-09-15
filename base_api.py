@@ -2,8 +2,11 @@ import flask
 import sys
 import os
 import time
+
 from werkzeug.wrappers import Request,Response
 from werkzeug.serving import run_simple
+
+from flask import Flask
 #配置logging文件，简化logger = logging.getLogger(__name__)，使用logging.basicConfig定义默认接口，可以直接使用logging对象
 import logging
 logging.basicConfig(

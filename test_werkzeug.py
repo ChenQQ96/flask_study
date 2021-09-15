@@ -1,4 +1,11 @@
 from base_api import *
+
+from werkzeug.wrappers import Request,Response
+from werkzeug.serving import run_simple
+#wsgi.py
+#werkzeug是一个用于编写Python WSGI程序的工具包
+#它的结构设计和代码质量在开源社区广受褒扬，其源码被尊为Python技术领域最值得阅读的开源库之一
+
 @Request.application
 def hello(request):
     return Response("Hello World")
