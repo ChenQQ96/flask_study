@@ -1,11 +1,14 @@
 #知道一个函数，怎么去获得这个URL呢:通过 url_for(函数名,查询参数)
-from flask import Flask,url_for
+from flask import Flask,url_for,request
 
 app = Flask(__name__)
 
-@app.route('/')
+@app.route('/',methods=['POST','GET'])
 def index():
-    return 'index'
+    if request.method=='POST':
+        return 'POST'
+    else:
+        return 'GET'
 
 @app.route('/login/')
 def login():
