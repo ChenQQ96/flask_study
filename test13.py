@@ -1,5 +1,5 @@
 #关键字with的用法
-#断言assert的用法
+#断言assert的用法:assert（断言）用于判断一个表达式，在表达式条件为 false 的时候触发异常。
 
 #用法1：打开文件
 with open('test5.py') as f:
@@ -18,4 +18,4 @@ finally:
 print(p)
 print('------------------')
 
-assert False
+assert True
