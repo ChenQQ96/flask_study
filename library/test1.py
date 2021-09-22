@@ -18,11 +18,17 @@ def index_v1():
             <title>inner flask page</title>
         </head>
         <body>
-            <h3>hello,"""+user['username']+"""</h3>
+            <h3>hello,"""+user['username']+"""</h3> <!--固定格式-->
         </body>
     </html>
     """
     return html_text
+
+@app.route('/test/')
+def test():
+    title="test"
+    username={"name1":"ChenQQ"}
+    return render_template('test.html',title=title,username=username)
 
 @app.route('/2/')
 def index_v2():
@@ -47,6 +53,6 @@ def index_v3():
         {"author":"name4","bookname":"book4"}
     ]
     return render_template("index_v3.html",title="ChenQQ",borrower=borrower,booklist=booklist)
-    
+
 if __name__=="__main__":
     app.run()
