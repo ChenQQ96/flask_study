@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8" />
+            {% if title %}
+        <title>
+            {{title}}-Flask Title
+        </title>
+            {% else %}
+        <title>
+            欢迎来到博客！
+        </title>
+            {% endif %}
+    </head>
+    <body>
+        <h3>
+            借阅证号:{{borrower.postcard}},借阅时间:{{borrower.borrowdate}}
+        </h3>
+        <table>
+            <tr>
+                <th>
+                    作者姓名
+                </th>
+                <th>
+                    书籍名称
+                </th>
+            </tr>
+            {% for book in booklist %}
+            <tr>
+                <td>{{book.author}}</td>
+                <td>{{book.bookname}}</td>
+            </tr>
+        {% endfor %}
+        </table>
+    </body>
+</html>
