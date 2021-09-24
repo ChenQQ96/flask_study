@@ -1,5 +1,5 @@
-#基于flask-sqlalchemy的图书借阅系统的实现
-#根据教程中的表格，创建数据表
+#数据库设计和ORM映射
+
 
 import sqlite3
 import os
