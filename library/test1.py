@@ -1,6 +1,7 @@
 #使输出的html应用看起来更复杂一些
 #能接受内部参数
 from flask import Flask,render_template
+import datetime
 
 app=Flask(__name__)
 
@@ -24,12 +25,6 @@ def index_v1():
     """
     return html_text
 
-@app.route('/test/')
-def test():
-    title="test"
-    username={"name1":"ChenQQ"}
-    return render_template('test.html',title=title,username=username)
-
 @app.route('/2/')
 def index_v2():
     """
@@ -52,7 +47,40 @@ def index_v3():
         {"author":"name3","bookname":"book3"},
         {"author":"name4","bookname":"book4"}
     ]
-    return render_template("index_v3.html",title="ChenQQ",borrower=borrower,booklist=booklist)
+    return render_template("index_v3.html",title="title",borrower=borrower,booklist=booklist)
+
+@app.route('/4/')
+def index_v4():
+    """继承"""
+    today=datetime.date.today()
+    user={'username':"ChenQQ"}
+    borrower={'postcard':'222','borrowdate':today}
+    tabletitle={'author','bookname'}
+    booklist=[
+        {"author":"name1","bookname":"book1"},
+        {"author":"name2","bookname":"book2"},
+        {"author":"name3","bookname":"book3"},
+        {"author":"name4","bookname":"book4"}
+    ]
+    return render_template('index_v4.html',user=user,borrower=borrower,tabletitle=tabletitle,booklist=booklist)
+
+@app.route('/test1/')
+def test1():
+    title="test1"
+    username={"name1":"ChenQQ"}
+    return render_template('test1.html',title=title,username=username)
+
+@app.route('/test2/')
+def test2():
+    today=datetime.date.today()
+    title="test2"
+    user={'username':'ChenQQ'}
+    borrower={'postcard':'11',"borrowdate":today}
+    booklist=[
+        {'author':'name1','bookname':'book1'},
+        {'author':'name2','bookname':'book2'}
+    ]
+    return render_template('test2.html',title=title,borrower=borrower,booklist=booklist)
 
 if __name__=="__main__":
     app.run()

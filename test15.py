@@ -13,7 +13,7 @@ except sqlite3.OperationalError as e:
     print('表格region已存在')
 #插入一条数据
 try:
-    cur.execute('insert into region(id,name) values("1","杭州")')
+    cur.execute('insert into region(id,name) values("7","杭州")')
 except sqlite3.IntegrityError as e:
     print('单条id已存在')
 #插入多条记录

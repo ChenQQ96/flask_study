@@ -2,7 +2,7 @@
 <html>
     <head>
         <meta charset="UTF-8" />
-            {% if title %}
+            {% if title %} <!--如果title变量的内容不为空-->
         <title>
             {{title}}-Flask Title
         </title>
@@ -17,8 +17,8 @@
             借阅证号:{{borrower.postcard}},借阅时间:{{borrower.borrowdate}}
         </h3>
         <table>
-            <tr>
-                <th>
+            <tr><!--表格行-->
+                <th><!--表头-->
                     作者姓名
                 </th>
                 <th>
@@ -27,10 +27,10 @@
             </tr>
             {% for book in booklist %}
             <tr>
-                <td>{{book.author}}</td>
+                <td>{{book.author}}</td><!--单元格内容-->
                 <td>{{book.bookname}}</td>
             </tr>
-        {% endfor %}
+            {% endfor %}
         </table>
     </body>
 </html>

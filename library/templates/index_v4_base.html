@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+ <head> 
+  <meta charset="UTF-8" /> 
+  <title>Twitter Bootstrap Tutorial - A responsive layout tutorial</title> 
+  <link href="C:/Users/86187/Desktop/flask_study/library/static/css/bootstrap.min.css" rel="stylesheet" /> 
+  <link href="C:/Users/86187/Desktop/flask_study/library/static/css/bootstrap-theme.min.css" rel="stylesheet" /> 
+  <link href="C:/Users/86187/Desktop/flask_study/library/static/css/customer.css" rel="stylesheet" /> 
+ </head> 
+ <body> 
+ <div class="logo">
+    logo
+ </div>
+ <div class="container-fluid">    
+    <div class="row main">
+        <div class="col-md-3 nav">nav</div>
+        <div class="col-md-9 content">
+            <div class="content-body">content</div>
+            <div class="content-body">
+              {% block content %}
+ 
+              {% endblock %} 
+            </div>
+        </div>
+    </div>
+  </div>
+  <div class="toolbar">
+    toolbar
+ </div>
+  <script type="text/javascript" src="C:/Users/86187/Desktop/flask_study/library/lib/jquery.min.js"></script> 
+  <script type="text/javascript" src="C:/Users/86187/Desktop/flask_study/library/lib/bootstrap.min.js"></script>  
+ </body>
+</html>

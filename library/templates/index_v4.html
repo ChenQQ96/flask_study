@@ -1,0 +1,24 @@
+{% extends 'index_v4_base.html' %}
+     {% block content %}
+        <span class="label label-primary">{{ user.username }}</span>
+        <h2>{{ user.username }}</h2>   
+    <table class="table table-striped" style="color: black">
+     <caption>借阅者：{{ borrower.postcard }}，借阅时间：{{ borrower.borrowdate }}</caption>
+     <thead>
+       <tr>
+        {% for title in tabletitle %}
+       <th>{{ title }}</th>
+        {% endfor %}
+       </tr>
+     </thead>
+     <tbody>
+           {% for book in booklists %}
+              <tr>
+               <td>{{ book.author }}</th>
+               <td>{{ book.bookname }}</td>
+              </tr>
+           {% endfor %}
+     </tbody>
+    </table>        
+     {% endblock %}
+     

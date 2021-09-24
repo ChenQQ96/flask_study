@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8" />
+        {% if title %}
+        <title>
+            title is {{title}}!
+        </title>
+        {% else %}
+        <title>
+            欢迎来到{{user.username}}的博客
+        </title>
+        {% endif %}
+    </head>
+    <body>
+        <h3>借阅证号：{{borrower.postcard}} 借阅日期：{{borrower.borrowdate}}</h3>
+        <table>
+            <tr>
+                <th>借阅者</th>
+                <th>书名</th>
+            </tr>
+            {% for book in booklist %}
+            <tr>
+                <td>{{book.author}}</td>
+                <td>{{book.bookname}}</td>
+            </tr>
+            {% endfor %}
+        </table>
+    </body>
+</html>
