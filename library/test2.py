@@ -1,4 +1,4 @@
-#数据库设计和ORM映射
+#基于sqlite3的基本DDL、DML语法
 
 
 import sqlite3
