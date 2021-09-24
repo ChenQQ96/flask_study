@@ -1,5 +1,5 @@
 #数据库设计和ORM映射
-
+#根据教程中的表格，创建数据表
 
 import sqlite3
 import os
