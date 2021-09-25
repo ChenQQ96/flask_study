@@ -29,12 +29,22 @@ basedir = os.path.abspath(os.path.dirname(__file__))
  
 app = Flask(__name__)
 
+'''配置数据库，使flask项目和数据库相连'''
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'test4.db')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 # Error：Flask-Neither SQLALCHEMY_DATABASE_URI nor SQLALCHEMY_BINDS is set.
+'''实例化数据库对象'''
 db = SQLAlchemy(app)
 
+
 class AuthorInfo(db.Model):
+    '''
+    创建模型
+    params:
+        __tablename__   数据库名称
+        authorid等      字段名
+        Integer等       字段类型
+    '''
     __tablename__ = "authorinfo"
     authorid = db.Column(db.Integer, primary_key=True)
     authorname = db.Column(db.String(20), nullable=False)
@@ -48,6 +58,7 @@ class AuthorInfo(db.Model):
         if authorid != 0:
             self.authorid = authorid
  
+    #__repr__() 方法是类的实例化对象用来做“自我介绍”的方法，默认情况下，它会返回当前对象的“类名+object at+内存地址”，而如果对该方法进行重写，可以为其制作自定义的自我描述信息。
     def __repr__(self):
         return '<author %r>' % self.authorname
 
@@ -204,169 +215,177 @@ class BorrowerBook(db.Model):
  
 if __name__ == '__main__':
  
+    #删除数据库
     db.drop_all()
+    #创建数据库
     db.create_all()
+
+    '''
+    INSERT方法一
+    '''
     author = AuthorInfo('巴里', '', '美国')
     db.session.add(author)
     author = AuthorInfo('白鳝', '', '中国')
     db.session.add(author)
+    db.session.commit()
+    
+    for author in AuthorInfo.query.all():
+        print(author.authorid, author.authorname, author.authorcard, author.authornationality)
 
-db.session.commit()
- 
-for author in AuthorInfo.query.all():
-    print(author.authorid, author.authorname, author.authorcard, author.authornationality)
+    '''
+    INSERT方法二：批量
+    '''
+    bookinfolist = [['ISBN0001', '可爱的Python', '2009', '电子工业出版社', '图书', '2021-07-01'],
+                    ['ISBN0002', 'Python绝技', '2018', '电子工业出版社', '图书', '2021-07-01'],
+    ['ISBN0022', 'IT项目管理那些事儿', '2009', '电子工业出版社', '图书', '2021-07-01']]
+    bookinfoname = ['isbnno', 'bookname', 'ublisher', 'publicationdate', 'booktype', 'stockdate']
+    # bookinfodictlist=[]
+    # for bookinfo in bookinfolist:
+    #     bookinfodictlist.append(dict(zip(bookinfoname,bookinfo)))
+    bookinfodictlist = [dict(zip(bookinfoname, list)) for list in bookinfolist]
 
-bookinfolist = [['ISBN0001', '可爱的Python', '2009', '电子工业出版社', '图书', '2021-07-01'],
-                ['ISBN0002', 'Python绝技', '2018', '电子工业出版社', '图书', '2021-07-01'],
-['ISBN0022', 'IT项目管理那些事儿', '2009', '电子工业出版社', '图书', '2021-07-01']]
-bookinfoname = ['isbnno', 'bookname', 'ublisher', 'publicationdate', 'booktype', 'stockdate']
-# bookinfodictlist=[]
-# for bookinfo in bookinfolist:
-#     bookinfodictlist.append(dict(zip(bookinfoname,bookinfo)))
-bookinfodictlist = [dict(zip(bookinfoname, list)) for list in bookinfolist]
+    bookobjlist = []
+    for i in bookinfodictlist:
+        isbnno, bookname, publisher, publicationdate, booktype, stockdate = i.values()
+        bookobj = BookInfo(isbnno=isbnno, bookname=bookname, publisher=publisher,
+                            publicationdate=publicationdate, booktype=booktype,
+                            stockdate=datetime.strptime(stockdate, '%Y-%m-%d'))
+        bookobjlist.append(bookobj)
 
-bookobjlist = []
-for i in bookinfodictlist:
-    isbnno, bookname, publisher, publicationdate, booktype, stockdate = i.values()
-    bookobj = BookInfo(isbnno=isbnno, bookname=bookname, publisher=publisher,
-                        publicationdate=publicationdate, booktype=booktype,
-                        stockdate=datetime.strptime(stockdate, '%Y-%m-%d'))
-    bookobjlist.append(bookobj)
+    db.session.add_all(bookobjlist)
+    db.session.commit()
 
-db.session.add_all(bookobjlist)
-db.session.commit()
+    for book in BookInfo.query.all():
+        print(book.isbnno, book.bookname, book.publisher, book.publicationdate, book.booktype, book.stockdate)
 
-for book in BookInfo.query.all():
-    print(book.isbnno, book.bookname, book.publisher, book.publicationdate, book.booktype, book.stockdate)
+    print('------------------Book Stock Process-------------------')
+    bookstockinfolist = [['ISBN0001', 2, 2],
+                            ['ISBN0002', 2, 2],
+                            ['ISBN0022', 2, 2]]
+    bookstockinfoname = ['isbnno', 'purchasenum', 'stocknum']
 
-print('------------------Book Stock Process-------------------')
-bookstockinfolist = [['ISBN0001', 2, 2],
-                        ['ISBN0002', 2, 2],
-                        ['ISBN0022', 2, 2]]
-bookstockinfoname = ['isbnno', 'purchasenum', 'stocknum']
+    bookstockinfodictlist = [dict(zip(bookstockinfoname, list)) for list in bookstockinfolist]
 
-bookstockinfodictlist = [dict(zip(bookstockinfoname, list)) for list in bookstockinfolist]
+    bookstockobjlist = []
+    for i in bookstockinfodictlist:
+        isbnno, purchasenum, stocknum = i.values()
+        bookstockobj = BookStockInfo(isbnno=isbnno, purchasenum=purchasenum, stocknum=stocknum)
+        bookstockobjlist.append(bookstockobj)
 
-bookstockobjlist = []
-for i in bookstockinfodictlist:
-    isbnno, purchasenum, stocknum = i.values()
-    bookstockobj = BookStockInfo(isbnno=isbnno, purchasenum=purchasenum, stocknum=stocknum)
-    bookstockobjlist.append(bookstockobj)
+    db.session.add_all(bookstockobjlist)
+    db.session.commit()
 
-db.session.add_all(bookstockobjlist)
-db.session.commit()
+    for bookstock in BookStockInfo.query.all():
+        print(bookstock.isbnno, bookstock.purchasenum, bookstock.stocknum)
 
-for bookstock in BookStockInfo.query.all():
-    print(bookstock.isbnno, bookstock.purchasenum, bookstock.stocknum)
+    # db.relationship应用
+    # 查询isbnno == 'ISBN0008'的库存，返回BookStockInfo对象值
+    # 可relate_book当做为BookStockInfo的属性，直接返回BookInfo对象
+    bookstockquery = BookStockInfo.query.filter(BookStockInfo.isbnno == 'ISBN0008').first()
+    # bookstockquery.purchasenum  = 2
+    # bookstockquery.relate_book.bookname  ='PYTHON技术手册'
+    bookauthorlist = [['ISBN0001', 23],
+                        ['ISBN0002', 24],
+    ['ISBN0019', 15]]
+    
+    bookauthorinfoname = ['isbnno', 'authorid']
 
-# db.relationship应用
-# 查询isbnno == 'ISBN0008'的库存，返回BookStockInfo对象值
-# 可relate_book当做为BookStockInfo的属性，直接返回BookInfo对象
-bookstockquery = BookStockInfo.query.filter(BookStockInfo.isbnno == 'ISBN0008').first()
-# bookstockquery.purchasenum  = 2
-# bookstockquery.relate_book.bookname  ='PYTHON技术手册'
-bookauthorlist = [['ISBN0001', 23],
-                    ['ISBN0002', 24],
-['ISBN0019', 15]]
- 
-bookauthorinfoname = ['isbnno', 'authorid']
+    bookauthorinfodictlist = [dict(zip(bookauthorinfoname, list)) for list in bookauthorlist]
 
-bookauthorinfodictlist = [dict(zip(bookauthorinfoname, list)) for list in bookauthorlist]
+    bookauthorobjlist = []
+    for i in bookauthorinfodictlist:
+        isbnno, authorid = i.values()
+        bookauthorobj = BookAuthorinfo(isbnno=isbnno, authorid=authorid)
+        bookauthorobjlist.append(bookauthorobj)
 
-bookauthorobjlist = []
-for i in bookauthorinfodictlist:
-    isbnno, authorid = i.values()
-    bookauthorobj = BookAuthorinfo(isbnno=isbnno, authorid=authorid)
-    bookauthorobjlist.append(bookauthorobj)
+    db.session.add_all(bookauthorobjlist)
+    db.session.commit()
 
-db.session.add_all(bookauthorobjlist)
-db.session.commit()
+    for bookauthor in BookAuthorinfo.query.all():
+        print(bookauthor.bookauthorid, bookauthor.isbnno, bookauthor.authorid)
 
-for bookauthor in BookAuthorinfo.query.all():
-    print(bookauthor.bookauthorid, bookauthor.isbnno, bookauthor.authorid)
+    # borrowid,borrowername,sex,birthday,postcard,address,telephone,registerdate
+    borrowerinfolist = [[1, '张三', '男', '2000-01-01', '400111200001010043', '海口市', '13800100001', '2021-09-01'],
+                        [4, '赵六', '女', '1989-10-11', '400111198910110041', '海口市', '13800600002', '2021-09-03']]
+    borrowerinfoname = ['borrowid', 'borrowername', 'sex', 'birthday', 'postcard', 'address', 'telephone',
+                        'registerdate']
+    borrowerinfodictlist = [dict(zip(borrowerinfoname, list)) for list in borrowerinfolist]
 
-# borrowid,borrowername,sex,birthday,postcard,address,telephone,registerdate
-borrowerinfolist = [[1, '张三', '男', '2000-01-01', '400111200001010043', '海口市', '13800100001', '2021-09-01'],
-                    [4, '赵六', '女', '1989-10-11', '400111198910110041', '海口市', '13800600002', '2021-09-03']]
-borrowerinfoname = ['borrowid', 'borrowername', 'sex', 'birthday', 'postcard', 'address', 'telephone',
-                    'registerdate']
-borrowerinfodictlist = [dict(zip(borrowerinfoname, list)) for list in borrowerinfolist]
+    borrowerobjlist = []
+    for i in borrowerinfodictlist:
+        borrowerid, borrowername, sex, birthday, postcard, address, telephone, registerdate = i.values()
+        borrowerrbj = BorrowerInfo(borrowername=borrowername, sex=sex, birthday=datetime.strptime(birthday, '%Y-%m-%d'),
+                                    postcard=postcard,
+                                    address=address, telephone=telephone,
+                                    registerdate=datetime.strptime(registerdate, '%Y-%m-%d'), borrowerid=borrowerid)
+        borrowerobjlist.append(borrowerrbj)
 
-borrowerobjlist = []
-for i in borrowerinfodictlist:
-    borrowerid, borrowername, sex, birthday, postcard, address, telephone, registerdate = i.values()
-    borrowerrbj = BorrowerInfo(borrowername=borrowername, sex=sex, birthday=datetime.strptime(birthday, '%Y-%m-%d'),
-                                postcard=postcard,
-                                address=address, telephone=telephone,
-                                registerdate=datetime.strptime(registerdate, '%Y-%m-%d'), borrowerid=borrowerid)
-    borrowerobjlist.append(borrowerrbj)
+    db.session.add_all(borrowerobjlist)
+    db.session.commit()
 
-db.session.add_all(borrowerobjlist)
-db.session.commit()
+    for borrowerinfo in BorrowerInfo.query.all():
+        print(borrowerinfo.borrowername, borrowerinfo.sex, borrowerinfo.birthday, borrowerinfo.postcard,
+                borrowerinfo.address, borrowerinfo.telephone, borrowerinfo.registerdate, borrowerinfo.borrowerid)
 
-for borrowerinfo in BorrowerInfo.query.all():
-    print(borrowerinfo.borrowername, borrowerinfo.sex, borrowerinfo.birthday, borrowerinfo.postcard,
-            borrowerinfo.address, borrowerinfo.telephone, borrowerinfo.registerdate, borrowerinfo.borrowerid)
+    borrowerpasswordlist = [[1, '1qaz!QAZ'],
+                            [4, '1qaz!QAZ']]
+    borrowerpasswordname = ['borrowerid', 'password']
+    borrowerpassworddictlist = [dict(zip(borrowerpasswordname, list)) for list in borrowerpasswordlist]
 
-borrowerpasswordlist = [[1, '1qaz!QAZ'],
-                        [4, '1qaz!QAZ']]
-borrowerpasswordname = ['borrowerid', 'password']
-borrowerpassworddictlist = [dict(zip(borrowerpasswordname, list)) for list in borrowerpasswordlist]
+    borrowerpasswordobjlist = []
+    for i in borrowerpassworddictlist:
+        borrowerid, password = i.values()
+        borrowerpasswordobj = BorrowerPasswordInfo(borrowerid=borrowerid, password=password)
+        borrowerpasswordobjlist.append(borrowerpasswordobj)
 
-borrowerpasswordobjlist = []
-for i in borrowerpassworddictlist:
-    borrowerid, password = i.values()
-    borrowerpasswordobj = BorrowerPasswordInfo(borrowerid=borrowerid, password=password)
-    borrowerpasswordobjlist.append(borrowerpasswordobj)
+    db.session.add_all(borrowerpasswordobjlist)
+    db.session.commit()
 
-db.session.add_all(borrowerpasswordobjlist)
-db.session.commit()
+    for borrowerpasswordinfo in BorrowerPasswordInfo.query.all():
+        print(borrowerpasswordinfo.borrowerid, borrowerpasswordinfo.password)
 
-for borrowerpasswordinfo in BorrowerPasswordInfo.query.all():
-    print(borrowerpasswordinfo.borrowerid, borrowerpasswordinfo.password)
+    borrowerloginlist = [[1, '2021-09-01 10:01:00', '2021-09-01 12:01:00', 1],
+                            [1, '2021-09-03 10:01:00', '2021-09-03 12:01:00', 5]]
+    borrowerloginname = ['borrowerid', 'logindatetime', 'logoutdatetime', 'borrowerloginid']
+    borrowerlogindictlist = [dict(zip(borrowerloginname, list)) for list in borrowerloginlist]
 
-borrowerloginlist = [[1, '2021-09-01 10:01:00', '2021-09-01 12:01:00', 1],
-                        [1, '2021-09-03 10:01:00', '2021-09-03 12:01:00', 5]]
-borrowerloginname = ['borrowerid', 'logindatetime', 'logoutdatetime', 'borrowerloginid']
-borrowerlogindictlist = [dict(zip(borrowerloginname, list)) for list in borrowerloginlist]
+    borrowerloginobjlist = []
+    for i in borrowerlogindictlist:
+        borrowerid, logindatetime, logoutdatetime, borrowerloginid = i.values()
+        borrowerloginobj = BorrowerLoginInfo(borrowerid=borrowerid,
+                                                logindatetime=datetime.strptime(logindatetime, '%Y-%m-%d %H:%M:%S'),
+                                                logoutdatetime=datetime.strptime(logoutdatetime, '%Y-%m-%d %H:%M:%S'),
+                                                borrowerloginid=borrowerloginid)
+        borrowerloginobjlist.append(borrowerloginobj)
 
-borrowerloginobjlist = []
-for i in borrowerlogindictlist:
-    borrowerid, logindatetime, logoutdatetime, borrowerloginid = i.values()
-    borrowerloginobj = BorrowerLoginInfo(borrowerid=borrowerid,
-                                            logindatetime=datetime.strptime(logindatetime, '%Y-%m-%d %H:%M:%S'),
-                                            logoutdatetime=datetime.strptime(logoutdatetime, '%Y-%m-%d %H:%M:%S'),
-                                            borrowerloginid=borrowerloginid)
-    borrowerloginobjlist.append(borrowerloginobj)
+    db.session.add_all(borrowerloginobjlist)
+    db.session.commit()
 
-db.session.add_all(borrowerloginobjlist)
-db.session.commit()
+    for borrowerlogininfo in BorrowerLoginInfo.query.all():
+        print(borrowerlogininfo.borrowerid, borrowerlogininfo.logindatetime, borrowerlogininfo.logoutdatetime,
+                borrowerlogininfo.borrowerloginid)
 
-for borrowerlogininfo in BorrowerLoginInfo.query.all():
-    print(borrowerlogininfo.borrowerid, borrowerlogininfo.logindatetime, borrowerlogininfo.logoutdatetime,
-            borrowerlogininfo.borrowerloginid)
+    borrowerbooklist = [[1, 'ISBN0001', '2021-09-01', '2021-09-02', '1', 1],
+                        [1, 'ISBN0005', '2021-09-03', '', '0', 6]]
+    borrowerbookname = ['borrowerid', 'isbnno', 'borrowdate', 'returndate', 'returnflag', 'borrowbookid']
+    borrowerbookdictlist = [dict(zip(borrowerbookname, list)) for list in borrowerbooklist]
 
-borrowerbooklist = [[1, 'ISBN0001', '2021-09-01', '2021-09-02', '1', 1],
-                    [1, 'ISBN0005', '2021-09-03', '', '0', 6]]
-borrowerbookname = ['borrowerid', 'isbnno', 'borrowdate', 'returndate', 'returnflag', 'borrowbookid']
-borrowerbookdictlist = [dict(zip(borrowerbookname, list)) for list in borrowerbooklist]
+    borrowerbookobjlist = []
+    for i in borrowerbookdictlist:
+        borrowerid, isbnno, borrowdate, returndate, returnflag, borrowbookid = i.values()
+        if returndate != '':
+            returndate = datetime.strptime(returndate, '%Y-%m-%d')
+        borrowerbookobj = BorrowerBook(borrowerid=borrowerid,
+                                        isbnno=isbnno,
+                                        borrowdate=datetime.strptime(borrowdate, '%Y-%m-%d'),
+                                        returndate=returndate,
+                                        returnflag=returnflag,
+                                        borrowbookid=borrowbookid)
+        borrowerbookobjlist.append(borrowerbookobj)
 
-borrowerbookobjlist = []
-for i in borrowerbookdictlist:
-    borrowerid, isbnno, borrowdate, returndate, returnflag, borrowbookid = i.values()
-    if returndate != '':
-        returndate = datetime.strptime(returndate, '%Y-%m-%d')
-    borrowerbookobj = BorrowerBook(borrowerid=borrowerid,
-                                    isbnno=isbnno,
-                                    borrowdate=datetime.strptime(borrowdate, '%Y-%m-%d'),
-                                    returndate=returndate,
-                                    returnflag=returnflag,
-                                    borrowbookid=borrowbookid)
-    borrowerbookobjlist.append(borrowerbookobj)
+    db.session.add_all(borrowerbookobjlist)
+    db.session.commit()
 
-db.session.add_all(borrowerbookobjlist)
-db.session.commit()
-
-for borrowerbookinfo in BorrowerBook.query.all():
-    print(borrowerbookinfo.borrowerid, borrowerbookinfo.isbnno, borrowerbookinfo.borrowdate,
-            borrowerbookinfo.returndate, borrowerbookinfo.returnflag, borrowerbookinfo.borrowbookid)
+    for borrowerbookinfo in BorrowerBook.query.all():
+        print(borrowerbookinfo.borrowerid, borrowerbookinfo.isbnno, borrowerbookinfo.borrowdate,
+                borrowerbookinfo.returndate, borrowerbookinfo.returnflag, borrowerbookinfo.borrowbookid)
